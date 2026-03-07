@@ -93,7 +93,7 @@ const displayIssues = (issues) => {
                   <div class="flex justify-between items-start p-4 text-gray-500 text-xs">
                     <div>
                       <div>Author</div>
-                      <div class="font-semibold text-gray-700">${issue.author || "-"}</div>
+                      <div class="font-semibold text-gray-700">#${issue.id} ${issue.author || "-"}</div>
                       <div class="mt-2">Assignee</div>
                       <div class="font-semibold text-gray-700">${issue.assignee || "-"}</div>
                     </div>
