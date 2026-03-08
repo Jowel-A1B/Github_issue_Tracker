@@ -10,7 +10,7 @@ function loadissues() {
         allIssues = result.data;
         displayIssues(allIssues);
         toggleSpinner(false);
-      }, 0); // 3000 ms = 3 second
+      }); // 3000 ms = 3 second
     })
     .catch((error) => {
       console.error("Error fetching issues:", error);
@@ -139,7 +139,6 @@ filterButtons.forEach((btn) => {
     this.classList.add("btn-active");
     hidden(this.id);
   });
-  loadissues();
 });
 
 const hidden = (status) => {
