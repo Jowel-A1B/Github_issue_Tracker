@@ -1,3 +1,5 @@
+let allIssues = [];
+
 function loadissues() {
   toggleSpinner(true);
 
@@ -5,7 +7,8 @@ function loadissues() {
     .then((response) => response.json())
     .then((result) => {
       setTimeout(() => {
-        displayIssues(result.data);
+        allIssues = result.data;
+        displayIssues(allIssues);
         toggleSpinner(false);
       }, 0); // 3000 ms = 3 second
     })
@@ -136,36 +139,19 @@ filterButtons.forEach((btn) => {
     this.classList.add("btn-active");
     hidden(this.id);
   });
+  loadissues();
 });
 
 const hidden = (status) => {
-  toggleSpinner(true);
+  searchInput.value = "";
 
-  const issueCards = document.querySelectorAll("#issue-card > div");
-  let c = 0;
-  issueCards.forEach((card) => {
-    if (status === "btn-all") {
-      card.style.display = "block";
-      c++;
-    } else if (status === "btn-open") {
-      if (card.innerHTML.includes("Open Status")) {
-        card.style.display = "block";
-        c++;
-      } else {
-        card.style.display = "none";
-      }
-    } else if (status === "btn-closed") {
-      if (card.innerHTML.includes("Closed Status")) {
-        card.style.display = "block";
-        c++;
-      } else {
-        card.style.display = "none";
-      }
-    }
-  });
-  countcards(c);
-
-  toggleSpinner(false);
+  if (status === "btn-all") {
+    displayIssues(allIssues);
+  } else if (status === "btn-open") {
+    displayIssues(allIssues.filter((issue) => issue.status === "open"));
+  } else if (status === "btn-closed") {
+    displayIssues(allIssues.filter((issue) => issue.status === "closed"));
+  }
 };
 
 const countcards = (cnt) => {
@@ -316,12 +302,5 @@ function filterIssues() {
 }
 
 searchBtn.addEventListener("click", filterIssues);
-
-// 2️⃣ Optional: Input enter key
-searchInput.addEventListener("keyup", (e) => {
-  if (e.key === "Enter") {
-    filterIssues();
-  }
-});
 
 loadissues();
