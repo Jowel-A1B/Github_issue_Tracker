@@ -105,14 +105,11 @@ const displayIssues = (issues) => {
                     <div>
                       <div>Author</div>
                       <div class="font-semibold text-gray-700">#${issue.id} ${issue.author || "-"}</div>
-                      <div class="mt-2">Assignee</div>
-                      <div class="font-semibold text-gray-700">${issue.assignee || "-"}</div>
                     </div>
                     <div class="text-right">
                       <div>Created</div>
                       <div class="font-semibold text-gray-700">${issue.createdAt ? issue.createdAt.slice(0, 10) : "-"}</div>
-                      <div class="mt-2">Updated</div>
-                      <div class="font-semibold text-gray-700">${issue.updatedAt ? issue.updatedAt.slice(0, 10) : "-"}</div>
+                     
                     </div>
                   </div>
 
@@ -130,7 +127,6 @@ const displayIssues = (issues) => {
   countcards(issues.length);
 };
 
-// button selection
 const filterButtons = [
   document.getElementById("btn-all"),
   document.getElementById("btn-open"),
