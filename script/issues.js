@@ -1,11 +1,20 @@
 function loadissues() {
+  toggleSpinner(true);
+
   fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
     .then((response) => response.json())
     .then((result) => {
-      displayIssues(result.data); // এখানে শুধু result.data পাঠান
+      setTimeout(() => {
+        displayIssues(result.data);
+        toggleSpinner(false);
+      }, 0); // 3000 ms = 3 second
     })
     .catch((error) => {
       console.error("Error fetching issues:", error);
+
+      setTimeout(() => {
+        toggleSpinner(false);
+      }, 0);
     });
 }
 
@@ -129,6 +138,8 @@ filterButtons.forEach((btn) => {
 });
 
 const hidden = (status) => {
+  toggleSpinner(true);
+
   const issueCards = document.querySelectorAll("#issue-card > div");
   let c = 0;
   issueCards.forEach((card) => {
@@ -152,6 +163,8 @@ const hidden = (status) => {
     }
   });
   countcards(c);
+
+  toggleSpinner(false);
 };
 
 const countcards = (cnt) => {
@@ -160,5 +173,15 @@ const countcards = (cnt) => {
     count.textContent = cnt;
   }
 };
+
+function toggleSpinner(show) {
+  const spinner = document.getElementById("spinner");
+
+  if (show) {
+    spinner.style.display = "flex";
+  } else {
+    spinner.style.display = "none";
+  }
+}
 
 loadissues();
