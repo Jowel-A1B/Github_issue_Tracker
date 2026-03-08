@@ -23,11 +23,13 @@ const displayIssues = (issues) => {
   issueCardContainer.innerHTML = "";
   issues.forEach((issue) => {
     const issueCard = document.createElement("div");
+    issueCard.className =
+      "card cursor-pointer max-w-full bg-white rounded-xl shadow-md border border-gray-200";
     issueCard.innerHTML = `
 
 
 
-              <div class="max-w-full bg-white rounded-xl shadow-md border border-gray-200">
+             
                 ${
                   issue.status === "open"
                     ? '<div class="w-full h-2 rounded-t-xl bg-green-400"></div>'
@@ -114,9 +116,14 @@ const displayIssues = (issues) => {
                     </div>
                   </div>
 
-              </div>
+  
 
         `;
+
+    issueCard.addEventListener("click", () => {
+      displayModal(issue.id);
+    });
+
     issueCardContainer.appendChild(issueCard);
   });
 
@@ -182,6 +189,111 @@ function toggleSpinner(show) {
   } else {
     spinner.style.display = "none";
   }
+}
+
+function displayModal(issueId) {
+  const issueModal = document.getElementById("my_modal");
+  if (!issueModal) return console.error("Modal element not found!");
+
+  fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${issueId}`)
+    .then((response) => response.json())
+    .then((result) => {
+      const issue = result.data;
+
+      const formattedDate = issue.createdAt
+        ? new Date(issue.createdAt).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "-";
+
+      const statusClass =
+        issue.status === "open" ? "bg-green-500" : "bg-violet-500";
+      const statusText = issue.status === "open" ? "Opened" : "Closed";
+      const priorityClass =
+        issue.priority === "high"
+          ? "bg-red-500 text-white"
+          : issue.priority === "medium"
+            ? "bg-yellow-400 text-white"
+            : "bg-green-500 text-white";
+
+      const labelsHTML =
+        issue.labels && issue.labels.length > 0
+          ? issue.labels
+              .map((label) => {
+                switch (label.toLowerCase()) {
+                  case "bug":
+                    return `<span class="bg-red-50 border border-red-300 text-red-500 px-4 py-1.5 rounded-full text-sm font-medium"><i class="fa-solid fa-bug"></i> BUG</span>`;
+                  case "enhancement":
+                    return `<span class="bg-blue-50 border border-blue-300 text-blue-500 px-4 py-1.5 rounded-full text-sm font-medium"><i class="fa-solid fa-wand-magic-sparkles"></i> ENHANCEMENT</span>`;
+                  case "documentation":
+                    return `<span class="bg-gray-50 border border-gray-300 text-gray-500 px-4 py-1.5 rounded-full text-sm font-medium"><i class="fa-solid fa-book"></i> DOCUMENTATION</span>`;
+                  case "help wanted":
+                    return `<span class="bg-yellow-50 border border-yellow-400 text-yellow-600 px-4 py-1.5 rounded-full text-sm font-medium"><i class="fa-solid fa-hands-helping"></i> HELP WANTED</span>`;
+                  case "good first issue":
+                    return `<span class="bg-green-50 border border-green-300 text-green-600 px-4 py-1.5 rounded-full text-sm font-medium"><i class="fa-solid fa-seedling"></i> GOOD FIRST ISSUE</span>`;
+                  default:
+                    return `<span class="bg-gray-50 border border-gray-200 text-gray-400 px-4 py-1.5 rounded-full text-sm font-medium">${label.toUpperCase()}</span>`;
+                }
+              })
+              .join("")
+          : "";
+
+      issueModal.innerHTML = `
+        <div class="modal-box max-w-3xl p-8 rounded-2xl">
+          <!-- Title -->
+          <h2 class="text-3xl font-bold text-gray-900 mb-3">${issue.title}</h2>
+
+          <!-- Status + Author + Date -->
+          <div class="flex items-center gap-2 text-sm text-gray-500 mb-5">
+            <span class="${statusClass} text-white text-xs font-semibold px-3 py-1 rounded-full">
+              ${statusText}
+            </span>
+            <span>•</span>
+            <span>Opened by ${issue.author || "-"}</span>
+            <span>•</span>
+            <span>${formattedDate}</span>
+          </div>
+
+          <!-- Labels -->
+          <div class="flex gap-2 flex-wrap mb-6">
+            ${labelsHTML}
+          </div>
+
+          <!-- Description -->
+          <p class="text-gray-600 text-base leading-relaxed mb-6">${issue.description}</p>
+
+          <!-- Info Box: Assignee & Priority -->
+          <div class="bg-gray-50 rounded-xl p-6 flex justify-between items-center mb-6">
+            <div>
+              <p class="text-gray-400 text-sm mb-1">Assignee:</p>
+              <p class="text-gray-800 font-semibold text-lg">${issue.assignee || "-"}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-gray-400 text-sm mb-1">Priority:</p>
+              <span class="${priorityClass} text-sm px-5 py-1.5 rounded-full font-semibold">
+                ${issue.priority.toUpperCase()}
+              </span>
+            </div>
+          </div>
+
+          <!-- Close Button -->
+          <div class="flex justify-end">
+            <form method="dialog">
+              <button class="btn bg-violet-600 hover:bg-violet-700 border-none text-white px-8 rounded-lg">Close</button>
+            </form>
+          </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+          <button>close</button>
+        </form>
+      `;
+
+      // Show modal
+      issueModal.showModal();
+    })
+    .catch((error) => console.error("Error fetching issue details:", error));
 }
 
 loadissues();
