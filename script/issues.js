@@ -27,9 +27,6 @@ const displayIssues = (issues) => {
       "card cursor-pointer max-w-full bg-white rounded-xl shadow-md border border-gray-200";
     issueCard.innerHTML = `
 
-
-
-             
                 ${
                   issue.status === "open"
                     ? '<div class="w-full h-2 rounded-t-xl bg-green-400"></div>'
@@ -132,6 +129,7 @@ const filterButtons = [
   document.getElementById("btn-open"),
   document.getElementById("btn-closed"),
 ];
+
 filterButtons.forEach((btn) => {
   btn.addEventListener("click", function () {
     filterButtons.forEach((b) => b.classList.remove("btn-active"));
@@ -291,5 +289,39 @@ function displayModal(issueId) {
     })
     .catch((error) => console.error("Error fetching issue details:", error));
 }
+
+const searchInput = document.getElementById("search-input");
+const searchBtn = document.getElementById("search-btn");
+
+function filterIssues() {
+  const query = searchInput.value.toLowerCase();
+
+  toggleSpinner(true);
+
+  fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${query}`)
+    .then((response) => response.json())
+    .then((result) => {
+      setTimeout(() => {
+        displayIssues(result.data);
+        toggleSpinner(false);
+      }, 0); // 3000 ms = 3 second
+    })
+    .catch((error) => {
+      console.error("Error fetching issues:", error);
+
+      setTimeout(() => {
+        toggleSpinner(false);
+      }, 0);
+    });
+}
+
+searchBtn.addEventListener("click", filterIssues);
+
+// 2️⃣ Optional: Input enter key
+searchInput.addEventListener("keyup", (e) => {
+  if (e.key === "Enter") {
+    filterIssues();
+  }
+});
 
 loadissues();
