@@ -1,4 +1,4 @@
-# 1- Var, Let, Const এর পার্থক্য
+### 1- Var, Let, Const এর পার্থক্য
 
 ## Scope (কোথায় valid)
 
@@ -23,3 +23,7 @@
 - `var` → hoisted, value undefined থাকে
 - `let` → hoisted, কিন্তু temporal dead zone আছে
 - `const` → hoisted, কিন্তু temporal dead zone আছে
+
+### 2 Spread Operator (`...`)
+
+The spread operator (`...`) in JavaScript allows you to **expand an iterable** (like an array, object, or string) into **individual elements**. It is commonly used to **copy arrays/objects, merge them, or pass multiple values as function arguments**.
